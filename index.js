@@ -51,7 +51,7 @@ app.get('/odata/flights', async (req, res) => {
   }
 });
 
-// ✅ $metadata endpoint (update property names/types if needed)
+// ✅ $metadata endpoint for SAP Analytics Cloud
 app.get('/odata/$metadata', (req, res) => {
   res.type('application/xml');
   res.send(`<?xml version="1.0" encoding="utf-8"?>
@@ -78,7 +78,7 @@ app.get('/odata/$metadata', (req, res) => {
 </edmx:Edmx>`);
 });
 
-// ✅ Start server
+// ✅ Start the server
 app.listen(port, () => {
   console.log(`OData server running at http://localhost:${port}/odata/flights`);
 });
