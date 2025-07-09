@@ -3,7 +3,7 @@ const cors = require('cors');
 const { createClient } = require('@supabase/supabase-js');
 
 const app = express();
-app.use(cors()); // ✅ Enable CORS
+app.use(cors());
 
 const port = process.env.PORT || 3000;
 
@@ -11,7 +11,7 @@ const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// ✅ OData-like /flights endpoint
+// ✅ Flights OData endpoint
 app.get('/odata/flights', async (req, res) => {
   try {
     let query = supabase.from('flights').select('*');
@@ -51,7 +51,7 @@ app.get('/odata/flights', async (req, res) => {
   }
 });
 
-// ✅ $metadata endpoint for SAP Analytics Cloud
+// ✅ OData Metadata Endpoint — SAP needs this!
 app.get('/odata/$metadata', (req, res) => {
   res.type('application/xml');
   res.send(`<?xml version="1.0" encoding="utf-8"?>
@@ -78,7 +78,7 @@ app.get('/odata/$metadata', (req, res) => {
 </edmx:Edmx>`);
 });
 
-// ✅ Start the server
+// ✅ Start server
 app.listen(port, () => {
   console.log(`OData server running at http://localhost:${port}/odata/flights`);
 });
