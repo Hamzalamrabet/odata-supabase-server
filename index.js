@@ -1,17 +1,17 @@
 const express = require('express');
+const cors = require('cors');
 const { createClient } = require('@supabase/supabase-js');
 
 const app = express();
+app.use(cors()); // ✅ Enable CORS
 
-// ✅ Use Render's PORT if available
 const port = process.env.PORT || 3000;
 
-// ✅ Get Supabase credentials from environment variables
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// OData-like query
+// ✅ OData-like /flights endpoint
 app.get('/odata/flights', async (req, res) => {
   try {
     let query = supabase.from('flights').select('*');
@@ -51,13 +51,34 @@ app.get('/odata/flights', async (req, res) => {
   }
 });
 
-// Metadata
+// ✅ $metadata endpoint (update property names/types if needed)
 app.get('/odata/$metadata', (req, res) => {
   res.type('application/xml');
-  res.send(`YOUR XML METADATA HERE`); // Keep the same metadata block
+  res.send(`<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="4.0"
+  xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+  <edmx:DataServices>
+    <Schema Namespace="ODataService"
+      xmlns="http://docs.oasis-open.org/odata/ns/edm">
+      <EntityType Name="Flight">
+        <Key>
+          <PropertyRef Name="id" />
+        </Key>
+        <Property Name="id" Type="Edm.Int32" Nullable="false" />
+        <Property Name="airline" Type="Edm.String" />
+        <Property Name="departure" Type="Edm.String" />
+        <Property Name="arrival" Type="Edm.String" />
+        <Property Name="status" Type="Edm.String" />
+      </EntityType>
+      <EntityContainer Name="Default">
+        <EntitySet Name="flights" EntityType="ODataService.Flight" />
+      </EntityContainer>
+    </Schema>
+  </edmx:DataServices>
+</edmx:Edmx>`);
 });
 
-// Start the server
+// ✅ Start server
 app.listen(port, () => {
   console.log(`OData server running at http://localhost:${port}/odata/flights`);
 });
